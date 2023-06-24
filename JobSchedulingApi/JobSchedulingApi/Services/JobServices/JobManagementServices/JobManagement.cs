@@ -1,23 +1,28 @@
-﻿using JobSchedulingApi.Models;
+﻿using JobSchedulingApi.AdoNet;
+using JobSchedulingApi.Models;
 using Quartz;
 
 namespace JobSchedulingApi.Services.JobServices.JobManagementServices
 {
     public class JobManagement : IJobManagement
     {
-        ISchedulerFactory _schedulerFactory;
+        private ISchedulerFactory _schedulerFactory;
         private readonly IConfiguration _configuration;
         private readonly JobKey _jobKey;
+        private Storage _storage = null;
 
         public JobManagement(ISchedulerFactory schedulerFactory, JobWrapper jobs, IConfiguration configuration)
         {
             _schedulerFactory = schedulerFactory;
             _configuration = configuration;
             _jobKey = new JobKey(_configuration.GetValue<string>("JobsNames:Emailing"));
+            _storage = new Storage(_configuration.GetConnectionString("JobConfigurations"));
         }
 
         public async Task PauseJob()
         {
+            _storage.UpdateState(_configuration.GetValue<string>("JobsNames:Emailing"), false);
+
             IScheduler Scheduler = await _schedulerFactory.GetScheduler();
 
             await Scheduler.PauseJob(_jobKey);
@@ -25,6 +30,8 @@ namespace JobSchedulingApi.Services.JobServices.JobManagementServices
 
         public async Task ResumeJob()
         {
+            _storage.UpdateState(_configuration.GetValue<string>("JobsNames:Emailing"), true);
+
             IScheduler Scheduler = await _schedulerFactory.GetScheduler();
 
             await Scheduler.ResumeJob(_jobKey);
@@ -32,6 +39,8 @@ namespace JobSchedulingApi.Services.JobServices.JobManagementServices
 
         public async Task RescheduleJob(string cronExpression)
         {
+            _storage.UpdateCronExpression(_configuration.GetValue<string>("JobsNames:Emailing"), cronExpression);
+
             IScheduler Scheduler = await _schedulerFactory.GetScheduler();
 
             var jobTriggers = await Scheduler.GetTriggersOfJob(_jobKey);
