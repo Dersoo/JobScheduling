@@ -15,7 +15,8 @@ namespace JobSchedulingApi.Jobs
         {
             CancellationTokenSource source = new CancellationTokenSource();
 
-            await _emailSender.SendEmailAsync("mikaiel.gold.harakian@gmail.com", "Test", "Hello", source.Token);
+            //await _emailSender.SendEmailAsync("mikaiel.gold.harakian@gmail.com", "Test", "Hello", source.Token);
+            Console.WriteLine($"Message sent! [{DateTime.Now}]");
         }
     }
 }

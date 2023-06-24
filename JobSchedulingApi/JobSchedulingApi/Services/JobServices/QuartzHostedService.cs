@@ -6,26 +6,30 @@ namespace JobSchedulingApi.Services.JobServices
 {
     public class QuartzHostedService : IHostedService
     {
+        private readonly IConfiguration _configuration;
         private readonly ISchedulerFactory _schedulerFactory;
         private readonly IJobFactory _jobFactory;
         private readonly IEnumerable<JobWrapper> _jobs;
         public IScheduler Scheduler { get; set; }
 
-        public QuartzHostedService(ISchedulerFactory schedulerFactory,
+        public QuartzHostedService(IConfiguration configuration,
+                                   ISchedulerFactory schedulerFactory,
                                    IJobFactory jobFactory,
                                    IEnumerable<JobWrapper> jobs)
         {
+            _configuration = configuration;
             _schedulerFactory = schedulerFactory;
             _jobFactory = jobFactory;
             _jobs = jobs;
         }
 
-        private static IJobDetail CreateJob(JobWrapper job)
+        private static IJobDetail CreateJob(JobWrapper job, string jobName = "defaultJobName")
         {
             var type = job.Type;
 
             return JobBuilder.Create(type)
-                .WithIdentity(type.FullName)
+                //.WithIdentity(type.FullName)
+                .WithIdentity(new JobKey(jobName))
                 .WithDescription(type.Name).Build();
         }
 
@@ -33,6 +37,9 @@ namespace JobSchedulingApi.Services.JobServices
         {
             return TriggerBuilder.Create()
                 .WithIdentity($"{job.Type.FullName}.trigger")
+                //.WithSimpleSchedule(
+                //    s => s.WithMisfireHandlingInstructionNextWithExistingCount()
+                //)
                 .WithCronSchedule(job.Expression)
                 .WithDescription(job.Expression)
                 .Build();
@@ -45,7 +52,7 @@ namespace JobSchedulingApi.Services.JobServices
 
             foreach (var job in _jobs)
             {
-                var newJob = CreateJob(job);
+                var newJob = CreateJob(job, _configuration.GetValue<string>("JobsNames:Emailing"));
                 var trigger = CreateTrigger(job);
                 await Scheduler.ScheduleJob(newJob, trigger, cancellationToken);
             }

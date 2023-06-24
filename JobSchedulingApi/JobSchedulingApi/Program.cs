@@ -5,6 +5,7 @@ using Quartz;
 using JobSchedulingApi.Services.EmailServices;
 using JobSchedulingApi.Jobs;
 using JobSchedulingApi.Models;
+using JobSchedulingApi.Services.JobServices.JobManagementServices;
 
 namespace JobSchedulingApi
 {
@@ -19,8 +20,9 @@ namespace JobSchedulingApi
             builder.Services.AddSingleton<IJobFactory, JobFactory>();
             builder.Services.AddSingleton<ISchedulerFactory, StdSchedulerFactory>();
             builder.Services.AddSingleton<EmailingJob>();
-            builder.Services.AddSingleton(new JobWrapper(type: typeof(EmailingJob), expression: "0/25 0/1 * 1/1 * ? *"));
+            builder.Services.AddSingleton(new JobWrapper(type: typeof(EmailingJob), expression: "0/5 0/1 * 1/1 * ? *"));
             builder.Services.AddTransient<IEmailSender, EmailSender>();
+            builder.Services.AddTransient<IJobManagement, JobManagement>();
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
