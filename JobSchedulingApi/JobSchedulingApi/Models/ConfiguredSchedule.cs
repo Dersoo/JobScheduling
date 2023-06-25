@@ -1,6 +1,6 @@
 ﻿namespace JobSchedulingApi.Models
 {
-    public class Schedule
+    public class ConfiguredSchedule
     {
         public string UnitOfTime { get; set; } = String.Empty;
         public byte UnitOfTimeValue { get; set; }

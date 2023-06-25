@@ -11,7 +11,7 @@ namespace JobSchedulingApi.Services.JobServices.JobManagementServices
         private readonly JobKey _jobKey;
         private Storage _storage = null;
 
-        public JobManagement(ISchedulerFactory schedulerFactory, JobWrapper jobs, IConfiguration configuration)
+        public JobManagement(ISchedulerFactory schedulerFactory, JobSchedule jobs, IConfiguration configuration)
         {
             _schedulerFactory = schedulerFactory;
             _configuration = configuration;

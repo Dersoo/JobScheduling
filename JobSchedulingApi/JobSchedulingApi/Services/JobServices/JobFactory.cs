@@ -14,7 +14,7 @@ namespace JobSchedulingApi.Services.JobServices
 
         public IJob NewJob(TriggerFiredBundle bundle, IScheduler scheduler)
         {
-            return (IJob)_serviceProvider.GetRequiredService(bundle.JobDetail.JobType) as IJob;
+            return (IJob)_serviceProvider.GetRequiredService(bundle.JobDetail.JobType);
         }
 
         public void ReturnJob(IJob job)
