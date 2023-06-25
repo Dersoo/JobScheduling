@@ -35,8 +35,8 @@ namespace JobSchedulingApi.AdoNet
 
             JobProperties jobProperties = null;
 
-            string sql = $"SELECT ID, NAME, CRON_EXPRESSION, IS_ACTIVE" +
-                         $"FROM QRTZ_JOB_PROPERTIES" +
+            string sql = $"SELECT ID, NAME, CRON_EXPRESSION, IS_ACTIVE " +
+                         $"FROM QRTZ_JOB_PROPERTIES " +
                          $"WHERE NAME = @Name";
 
             using (SqlCommand command = new SqlCommand(sql, _sqlConnection))

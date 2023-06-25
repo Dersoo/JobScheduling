@@ -20,7 +20,7 @@ namespace JobSchedulingApi
             builder.Services.AddSingleton<IJobFactory, JobFactory>();
             builder.Services.AddSingleton<ISchedulerFactory, StdSchedulerFactory>();
             builder.Services.AddSingleton<EmailingJob>();
-            builder.Services.AddSingleton(new JobSchedule(type: typeof(EmailingJob), expression: "0/5 0/1 * 1/1 * ? *"));
+            //builder.Services.AddSingleton(new JobSchedule(type: typeof(EmailingJob), expression: "0/5 0/1 * 1/1 * ? *")); //Initial JobSchedule
             builder.Services.AddTransient<IEmailSender, EmailSender>();
             builder.Services.AddTransient<IJobManagement, JobManagement>();
 
