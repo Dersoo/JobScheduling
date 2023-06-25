@@ -34,11 +34,17 @@ namespace JobSchedulingApi.Controllers
         }
 
         [HttpPost("ChangeSchedule")]
-        public async Task<IActionResult> ChangeSchedule([FromBody] string cronExpression)
+        public async Task<IActionResult> ChangeSchedule([FromBody] ConfiguredSchedule configuredSchedule)
         {
-            await _jobManagement.RescheduleJob(cronExpression);
+            await _jobManagement.RescheduleJob(configuredSchedule);
 
             return Ok();
+        }
+
+        [HttpGet("GetSchedule")]
+        public IActionResult GetSchedule()
+        {
+            return Ok(_jobManagement.GetReschedule());
         }
     }
 }

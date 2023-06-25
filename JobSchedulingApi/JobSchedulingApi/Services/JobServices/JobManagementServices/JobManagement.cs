@@ -1,5 +1,6 @@
 ﻿using JobSchedulingApi.AdoNet;
 using JobSchedulingApi.Models;
+using JobSchedulingApi.Services.JobServices.CronConvertingServices;
 using Quartz;
 
 namespace JobSchedulingApi.Services.JobServices.JobManagementServices
@@ -10,13 +11,15 @@ namespace JobSchedulingApi.Services.JobServices.JobManagementServices
         private readonly IConfiguration _configuration;
         private readonly JobKey _jobKey;
         private Storage _storage = null;
+        private ICronConverter _cronConverter;
 
-        public JobManagement(ISchedulerFactory schedulerFactory, IConfiguration configuration)
+        public JobManagement(ISchedulerFactory schedulerFactory, IConfiguration configuration, ICronConverter cronConverter)
         {
             _schedulerFactory = schedulerFactory;
             _configuration = configuration;
             _jobKey = new JobKey(_configuration.GetValue<string>("JobsNames:Emailing"));
             _storage = new Storage(_configuration.GetConnectionString("JobConfigurations"));
+            _cronConverter = cronConverter;
         }
 
         public async Task PauseJob()
@@ -37,8 +40,10 @@ namespace JobSchedulingApi.Services.JobServices.JobManagementServices
             await Scheduler.ResumeJob(_jobKey);
         }
 
-        public async Task RescheduleJob(string cronExpression)
+        public async Task RescheduleJob(ConfiguredSchedule configuredSchedule)
         {
+            string cronExpression = _cronConverter.ConfiguredScheduleToCronExpression(configuredSchedule);
+
             _storage.UpdateCronExpression(_configuration.GetValue<string>("JobsNames:Emailing"), cronExpression);
 
             IScheduler Scheduler = await _schedulerFactory.GetScheduler();
@@ -57,6 +62,13 @@ namespace JobSchedulingApi.Services.JobServices.JobManagementServices
 
                 await Scheduler.RescheduleJob(oldTrigger.Key, newTrigger);
             }
+        }
+
+        public ConfiguredSchedule GetReschedule()
+        {
+            JobProperties jobProperties = _storage.GetByName(_configuration.GetValue<string>("JobsNames:Emailing"));
+
+            return _cronConverter.CronExpressionToConfiguredSchedule(jobProperties.CronExpression);
         }
     }
 }
