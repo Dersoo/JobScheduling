@@ -3,6 +3,7 @@ using Quartz;
 
 namespace JobSchedulingApi.Jobs
 {
+    [DisallowConcurrentExecution]
     public class EmailingJob : IJob
     {
         private readonly IEmailSender _emailSender;
