@@ -31,6 +31,14 @@ namespace JobSchedulingApi
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            builder.Services.AddCors((setup) =>
+            {
+                setup.AddPolicy("default", (options) =>
+                {
+                    options.AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin();
+                });
+            });
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -39,6 +47,8 @@ namespace JobSchedulingApi
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            app.UseCors("default");
 
             app.UseHttpsRedirection();
 
