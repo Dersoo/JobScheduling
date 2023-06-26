@@ -66,13 +66,14 @@ namespace JobSchedulingApi.Services.JobServices.CronConvertingServices
                     configuredSchedule.UnitOfTime = "m";
                     configuredSchedule.UnitOfTimeValue = Byte.Parse(minutes.Replace("0/", ""));
                 }
-                else if (hourse != "*")
+                else if (hourse != "*" && days == "?")
                 {
                     configuredSchedule.UnitOfTime = "h";
                     configuredSchedule.UnitOfTimeValue = Byte.Parse(hourse.Replace("0/", ""));
                 }
                 else if (days != "?")
                 {
+                    configuredSchedule.Hours = hourse;
                     configuredSchedule.DaysOfTheWeek = days.Split(',');
                 }
 

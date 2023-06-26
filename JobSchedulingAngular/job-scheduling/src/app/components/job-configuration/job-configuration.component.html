@@ -1,0 +1,57 @@
+<div class="container">
+    <h1>Job Schedule</h1>
+    <div mat-dialog-actions [align]="'end'">
+        <button mat-raised-button color="primary" (click)="saveConfiguration()">{{ actionBtn }}</button>
+    </div>
+    <div>
+        <form [formGroup]="configurationForm" class="form">
+            <div class="form-row">
+                <div class="input-data">
+                    <h3>By minuts/hours:</h3>
+                </div>
+                <div class="input-data">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                        <mat-label>Unit of time</mat-label>
+                        <mat-select formControlName="unitOfTime">
+                            <mat-option [value]="">Weekly</mat-option>
+                            <mat-option *ngFor="let unit of unitsOfTime" [value]="unit">{{unit}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="input-data">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                        <mat-label>Unit of time value</mat-label>
+                        <input formControlName="unitOfTimeValue" matInput placeholder="Unit of time value" value="">
+                    </mat-form-field>
+                </div>
+                <div class="input-data">
+                    <mat-slide-toggle formControlName="isActive">Is active</mat-slide-toggle>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="input-data">
+                    <h3>On a certain day at a certain time:</h3>
+                </div>
+                <div class="input-data">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                        <mat-label>Hours</mat-label>
+                        <input formControlName="hours" matInput placeholder="Hours" value="">
+                    </mat-form-field>
+                </div>
+                <div class="input-data">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                        <mat-label>Days of the week</mat-label>
+                        <input formControlName="daysOfTheWeek" matInput placeholder="Days of the week" value="" style="display: none!important">
+                        <mat-selection-list formControlName="daysOfTheWeek"
+                                            [(ngModel)]="jobConfiguration.daysOfTheWeek"
+                                            #daysOfTheWeekList (selectionChange)="onGroupsChange(daysOfTheWeekList.selectedOptions.selected)">
+                            <mat-list-option *ngFor="let day of daysOfTheWeek" [value]="day" [selected]="isChacked(day)">
+                                {{day}}
+                            </mat-list-option>
+                        </mat-selection-list>
+                    </mat-form-field>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

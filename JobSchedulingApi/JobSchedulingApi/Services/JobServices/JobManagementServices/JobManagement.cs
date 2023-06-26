@@ -42,9 +42,21 @@ namespace JobSchedulingApi.Services.JobServices.JobManagementServices
 
         public async Task RescheduleJob(ConfiguredSchedule configuredSchedule)
         {
+            //TODO: Require additional checking if job executing 
+            if (configuredSchedule.IsActive)
+            {
+                await ResumeJob();
+            }
+            else
+            {
+                await PauseJob();
+            }
+            //
+
             string cronExpression = _cronConverter.ConfiguredScheduleToCronExpression(configuredSchedule);
 
             _storage.UpdateCronExpression(_configuration.GetValue<string>("JobsNames:Emailing"), cronExpression);
+            _storage.UpdateState(_configuration.GetValue<string>("JobsNames:Emailing"), configuredSchedule.IsActive);
 
             IScheduler Scheduler = await _schedulerFactory.GetScheduler();
 
@@ -68,7 +80,11 @@ namespace JobSchedulingApi.Services.JobServices.JobManagementServices
         {
             JobProperties jobProperties = _storage.GetByName(_configuration.GetValue<string>("JobsNames:Emailing"));
 
-            return _cronConverter.CronExpressionToConfiguredSchedule(jobProperties.CronExpression);
+            ConfiguredSchedule configuredSchedule = _cronConverter.CronExpressionToConfiguredSchedule(jobProperties.CronExpression);
+
+            configuredSchedule.IsActive = jobProperties.IsActive;
+
+            return configuredSchedule;
         }
     }
 }
